@@ -1,0 +1,8 @@
+.env
+logs
+dist
+node_modules
+.DS_Store
+.superintent/.env
+.superintent/*.db
+.claude/settings.local.json
