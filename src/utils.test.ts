@@ -4,7 +4,7 @@ import { createTmuxSessionName, isProcessAlive, SSH_PORT } from "./utils.ts";
 describe("createTmuxSessionName", () => {
   test("sanitizes directory names", () => {
     const name = createTmuxSessionName("/home/user/my project (1)");
-    expect(name).toMatch(/^my-project--1--[a-f0-9]{6}$/);
+    expect(name).toMatch(/^my-project--1--[a-f0-9]{6}-remote$/);
   });
 
   test("generates unique suffixes", () => {
@@ -15,7 +15,7 @@ describe("createTmuxSessionName", () => {
 
   test("uses folder basename only", () => {
     const name = createTmuxSessionName("/very/deep/nested/path");
-    expect(name).toMatch(/^path-[a-f0-9]{6}$/);
+    expect(name).toMatch(/^path-[a-f0-9]{6}-remote$/);
   });
 });
 

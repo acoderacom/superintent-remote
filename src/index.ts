@@ -5,6 +5,12 @@ import { findBinary, getLocalIp, getTailscaleIp, isProcessAlive, readPid, SSH_PO
 
 const args = process.argv.slice(2);
 
+if (args.includes("--version") || args.includes("-v")) {
+  const pkg = await import("../package.json");
+  console.log(pkg.version);
+  process.exit(0);
+}
+
 if (args.includes("--help") || args.includes("-h")) {
   console.log("Usage: superintent-remote [options]");
   console.log("");
@@ -14,6 +20,7 @@ if (args.includes("--help") || args.includes("-h")) {
   console.log("  --attach <session>  Attach to an existing tmux session");
   console.log("  --no-auth           Disable password authentication");
   console.log("  --no-qr             Disable QR code in startup banner");
+  console.log("  -v, --version       Show version number");
   console.log("  -h, --help          Show this help");
   process.exit(0);
 }
@@ -46,9 +53,9 @@ if (Number.isNaN(rawPort) || rawPort < 1 || rawPort > 65535) {
 const port = rawPort;
 
 // Check for already-running instance (write our PID atomically, then verify)
-const existingPid = await readPid("wrapper");
+const existingPid = await readPid(`wrapper-${port}`);
 if (existingPid && isProcessAlive(existingPid) && existingPid !== process.pid) {
-  console.error("ERROR: Superintent Remote is already running (PID: %d).", existingPid);
+  console.error("ERROR: Superintent Remote is already running on port %d (PID: %d).", port, existingPid);
   console.error("Kill it with Ctrl+C first.");
   process.exit(1);
 }

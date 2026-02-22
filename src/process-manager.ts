@@ -43,6 +43,7 @@ let shutdownRequested = false;
 let sshServer: Server | null = null;
 let currentSessionName = "";
 let currentCwd = "";
+let currentPort = 0;
 let isAttachMode = false;
 
 function generatePassword(): string {
@@ -114,7 +115,7 @@ async function shutdown(): Promise<void> {
   killTerminal({ keepSession });
 
   console.log("Cleaning up PID file...");
-  await removePid("wrapper");
+  await removePid(`wrapper-${currentPort}`);
 
   console.log("Done.");
   process.exit(0);
@@ -142,6 +143,7 @@ function promptUser(question: string): Promise<boolean> {
 export async function startServices(opts: StartOptions): Promise<void> {
   ensureCacheDir();
 
+  currentPort = opts.port;
   currentCwd = process.cwd();
 
   if (opts.attachSession) {
@@ -174,7 +176,7 @@ export async function startServices(opts: StartOptions): Promise<void> {
     password,
   });
 
-  await writePid("wrapper", process.pid);
+  await writePid(`wrapper-${currentPort}`, process.pid);
 
   console.error("");
   if (opts.local) {
