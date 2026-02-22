@@ -10,7 +10,7 @@ export const LOG_DIR = join(CACHE_DIR, "logs");
 export function createTmuxSessionName(cwd: string): string {
   const folder = basename(cwd).replace(/[^a-zA-Z0-9_-]/g, "-");
   const suffix = randomBytes(3).toString("hex");
-  return `${folder}-${suffix}`;
+  return `${folder}-${suffix}-remote`;
 }
 
 export function hasTmuxSession(name: string): boolean {
