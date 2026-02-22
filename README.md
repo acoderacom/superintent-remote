@@ -12,17 +12,32 @@ SSH into a shared terminal session running Claude Code on your Mac — from any 
 
 ## How it works
 
+### Tailscale mode (default)
+
 ```
 Phone (SSH client)  →  Tailscale VPN  →  Mac:2222  →  tmux session  →  Claude Code CLI
 ```
+
+Your Mac runs an SSH server bound to its Tailscale IP. Only devices on your Tailnet can reach it — nothing is exposed to the public internet.
+
+### Local mode (`--local`)
+
+```
+Phone (SSH client)  →  Local WiFi  →  Mac:2222  →  tmux session  →  Claude Code CLI
+```
+
+No Tailscale needed. The SSH server binds to your LAN IP (e.g. `192.168.x.x`). Any device on the same WiFi network can attempt to connect. Password authentication is always enforced in this mode.
+
+---
 
 All connected clients share a single terminal session. A 512KB scrollback buffer is replayed to new connections so you never lose context.
 
 ## Prerequisites
 
-- [Bun](https://bun.sh) runtime
+- [Bun](https://bun.sh) runtime — **Bun is required**. Node.js is not supported. This project uses Bun-specific APIs (`Bun.spawn`, `Bun.spawnSync`, `Bun.file`, `Bun.write`, `Bun.sleep`, `Bun.which`, and PTY support via `terminal` option).
 - [tmux](https://github.com/tmux/tmux) — `brew install tmux`
 - [Tailscale](https://tailscale.com/download) — installed and running (or use `--local` for LAN mode)
+- A mobile SSH client — e.g. [Termius](https://termius.com) (iOS/Android). Any SSH app that supports password auth will work. The startup banner includes a QR code you can scan to auto-fill the connection in Termius.
 
 ## Install
 
@@ -78,7 +93,7 @@ bun start
 On startup you'll see:
 
 ```
-=== Superintent Remote v1.0.0 (SSH) ===
+=== Superintent Remote v0.0.1 (SSH) ===
 Project:   /path/to/your/project
 Tmux:      project-a1b2c3
 Connect:   ssh user@100.x.x.x -p 2222
@@ -116,15 +131,35 @@ ssh user@100.x.x.x -p 2222
 | `--no-auth` | Disable password authentication (not allowed with `--local`) |
 | `--attach <name>` | Attach to an existing tmux session instead of creating a new one |
 | `--no-qr` | Suppress the QR code in the startup banner |
+| `-v, --version` | Show version number |
 | `-h, --help` | Show help |
 
 ## Environment Variables
 
-Set in `.superintent/.env` (recommended) or as shell env vars:
+Set in `.superintent/.env` (recommended) or as shell environment variables. The `.superintent/.env` file is loaded automatically on startup — values in the file will not override existing shell env vars.
 
-| Variable | Description |
-|----------|-------------|
-| `SUPERINTENT_REMOTE_PASSWORD` | Set a fixed password instead of auto-generating one |
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `SUPERINTENT_REMOTE_PASSWORD` | Set a fixed password instead of auto-generating one | Random 16-char hex |
+
+### Terminal environment
+
+These variables are set automatically in the tmux session (not user-configurable):
+
+| Variable | Value | Description |
+|----------|-------|-------------|
+| `LANG` | `en_US.UTF-8` | Locale for proper Unicode rendering |
+| `LC_ALL` | `en_US.UTF-8` | Locale override |
+| `TERM` | `xterm-256color` | Terminal type for color support |
+
+Claude Code internal variables (`CLAUDECODE`, `CLAUDE_CODE_ENTRYPOINT`, `CLAUDE_CODE_ENTRY_VERSION`, `CLAUDE_CODE_ENV_VERSION`) are stripped from the tmux session to avoid conflicts when launching a nested Claude Code instance.
+
+### `.superintent/.env` example
+
+```env
+# Fixed password (optional — a random one is generated if not set)
+SUPERINTENT_REMOTE_PASSWORD=my-secret-password
+```
 
 ## Security
 
