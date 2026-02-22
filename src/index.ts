@@ -15,9 +15,9 @@ if (args.includes("--help") || args.includes("-h")) {
   console.log("Usage: superintent-remote [options]");
   console.log("");
   console.log("Options:");
-  console.log("  --port <n>          SSH port (default: 2222)");
+  console.log("  --port <n>          SSH port (default: 2222, or SUPERINTENT_REMOTE_PORT)");
   console.log("  --local             Bind to local network IP (no Tailscale needed)");
-  console.log("  --attach <session>  Attach to an existing tmux session");
+  console.log("  --attach <session>  Attach to an existing tmux session (or SUPERINTENT_REMOTE_ATTACH)");
   console.log("  --no-auth           Disable password authentication");
   console.log("  --no-qr             Disable QR code in startup banner");
   console.log("  -v, --version       Show version number");
@@ -36,11 +36,13 @@ if (local && noAuth) {
   process.exit();
 }
 const portFlag = args.indexOf("--port");
-const rawPort = portFlag !== -1 && args[portFlag + 1] ? parseInt(args[portFlag + 1], 10) : SSH_PORT;
+const envPort = process.env.SUPERINTENT_REMOTE_PORT ? parseInt(process.env.SUPERINTENT_REMOTE_PORT, 10) : undefined;
+const rawPort = portFlag !== -1 && args[portFlag + 1] ? parseInt(args[portFlag + 1], 10) : envPort ?? SSH_PORT;
 
 const attachFlag = args.indexOf("--attach");
-const attachSession = attachFlag !== -1 ? args[attachFlag + 1] : undefined;
-if (attachFlag !== -1 && !attachSession) {
+const envAttach = process.env.SUPERINTENT_REMOTE_ATTACH || undefined;
+const attachSession = attachFlag !== -1 ? args[attachFlag + 1] : envAttach;
+if (attachFlag !== -1 && !args[attachFlag + 1]) {
   console.error("ERROR: --attach requires a session name.");
   console.error("Usage: superintent-remote --attach <session-name>");
   process.exit(1);

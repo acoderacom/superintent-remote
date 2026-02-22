@@ -140,6 +140,8 @@ Set in `.superintent/.env` (recommended) or as shell environment variables. The 
 
 | Variable | Description | Default |
 |----------|-------------|---------|
+| `SUPERINTENT_REMOTE_PORT` | SSH port (`--port` flag takes priority) | `2222` |
+| `SUPERINTENT_REMOTE_ATTACH` | Tmux session name to attach to (`--attach` flag takes priority) | — |
 | `SUPERINTENT_REMOTE_PASSWORD` | Set a fixed password instead of auto-generating one | Random 16-char hex |
 
 ### Terminal environment
@@ -157,6 +159,12 @@ Claude Code internal variables (`CLAUDECODE`, `CLAUDE_CODE_ENTRYPOINT`, `CLAUDE_
 ### `.superintent/.env` example
 
 ```env
+# SSH port (optional — default is 2222, --port flag takes priority)
+SUPERINTENT_REMOTE_PORT=3000
+
+# Attach to an existing tmux session (optional — --attach flag takes priority)
+SUPERINTENT_REMOTE_ATTACH=my-session
+
 # Fixed password (optional — a random one is generated if not set)
 SUPERINTENT_REMOTE_PASSWORD=my-secret-password
 ```
