@@ -73,7 +73,7 @@ export function getTmuxSession(): string | null {
   return tmuxSession;
 }
 
-export function spawnTerminal(sessionName: string, cwd?: string): ReturnType<typeof Bun.spawn> {
+export function spawnTerminal(sessionName: string, cwd?: string, yolo?: boolean): ReturnType<typeof Bun.spawn> {
   const tmux = findBinary("tmux");
   if (!tmux) {
     throw new Error("tmux is required but not found. Install it: brew install tmux");
@@ -117,8 +117,9 @@ export function spawnTerminal(sessionName: string, cwd?: string): ReturnType<typ
   scrollbackSize = 0;
 
   // Launch Claude Code CLI after tmux shell is ready
+  const claudeCmd = yolo ? "claude --dangerously-skip-permissions" : "claude";
   setTimeout(() => {
-    if (terminal) terminal.write("claude\r");
+    if (terminal) terminal.write(`${claudeCmd}\r`);
   }, CLAUDE_LAUNCH_DELAY_MS);
 
   return proc;

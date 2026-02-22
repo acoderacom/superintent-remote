@@ -45,6 +45,7 @@ let currentSessionName = "";
 let currentCwd = "";
 let currentPort = 0;
 let isAttachMode = false;
+let isYoloMode = false;
 
 function generatePassword(): string {
   return randomBytes(8).toString("hex"); // 16-char hex
@@ -77,7 +78,7 @@ async function watchdog(): Promise<void> {
     if (isAttachMode && hasTmuxSession(currentSessionName)) {
       attachTerminal(currentSessionName);
     } else {
-      spawnTerminal(currentSessionName, currentCwd);
+      spawnTerminal(currentSessionName, currentCwd, isYoloMode);
     }
     console.log(`[${new Date().toISOString()}] Terminal restarted`);
   }
@@ -128,6 +129,7 @@ export interface StartOptions {
   attachSession?: string;
   noQr?: boolean;
   local?: boolean;
+  yolo?: boolean;
 }
 
 function promptUser(question: string): Promise<boolean> {
@@ -145,6 +147,7 @@ export async function startServices(opts: StartOptions): Promise<void> {
 
   currentPort = opts.port;
   currentCwd = process.cwd();
+  isYoloMode = opts.yolo ?? false;
 
   if (opts.attachSession) {
     if (hasTmuxSession(opts.attachSession)) {
@@ -159,11 +162,11 @@ export async function startServices(opts: StartOptions): Promise<void> {
         process.exit(0);
       }
       currentSessionName = createTmuxSessionName(currentCwd);
-      spawnTerminal(currentSessionName, currentCwd);
+      spawnTerminal(currentSessionName, currentCwd, isYoloMode);
     }
   } else {
     currentSessionName = createTmuxSessionName(currentCwd);
-    spawnTerminal(currentSessionName, currentCwd);
+    spawnTerminal(currentSessionName, currentCwd, isYoloMode);
   }
 
   // Determine password
@@ -183,7 +186,7 @@ export async function startServices(opts: StartOptions): Promise<void> {
     console.error("WARNING: Binding to local network. Anyone on this WiFi can attempt to connect.");
     console.error("");
   }
-  console.error(`=== Superintent Remote v${pkg.version} (SSH) ===`);
+  console.error(`=== Superintent Remote v${pkg.version} (SSH)${isYoloMode ? " [YOLO]" : ""} ===`);
   console.error(`Project:   ${process.cwd()}`);
   console.error(`Tmux:      ${currentSessionName}`);
   console.error(`Connect:   ssh user@${opts.ip} -p ${opts.port}`);

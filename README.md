@@ -119,6 +119,7 @@ ssh user@100.x.x.x -p 2222
 | `--local` | Bind to local network IP instead of Tailscale (password required) |
 | `--no-auth` | Disable password authentication (not allowed with `--local`) |
 | `--attach <name>` | Attach to an existing tmux session instead of creating a new one |
+| `--yolo` | Launch Claude with `--dangerously-skip-permissions` |
 | `--no-qr` | Suppress the QR code in the startup banner |
 | `-v, --version` | Show version number |
 | `-h, --help` | Show help |
@@ -131,6 +132,7 @@ Set in `.superintent/.env` (recommended) or as shell environment variables. The 
 |----------|-------------|---------|
 | `SUPERINTENT_REMOTE_PORT` | SSH port (`--port` flag takes priority) | `2222` |
 | `SUPERINTENT_REMOTE_ATTACH` | Tmux session name to attach to (`--attach` flag takes priority) | — |
+| `SUPERINTENT_REMOTE_YOLO` | Set to `true` to launch Claude with `--dangerously-skip-permissions` | `false` |
 | `SUPERINTENT_REMOTE_PASSWORD` | Set a fixed password instead of auto-generating one | Random 16-char hex |
 
 ### Terminal environment
@@ -153,6 +155,9 @@ SUPERINTENT_REMOTE_PORT=3000
 
 # Attach to an existing tmux session (optional — --attach flag takes priority)
 SUPERINTENT_REMOTE_ATTACH=my-session
+
+# Launch Claude with --dangerously-skip-permissions (optional — or use --yolo flag)
+SUPERINTENT_REMOTE_YOLO=true
 
 # Fixed password (optional — a random one is generated if not set)
 SUPERINTENT_REMOTE_PASSWORD=my-secret-password

@@ -19,6 +19,7 @@ if (args.includes("--help") || args.includes("-h")) {
   console.log("  --local             Bind to local network IP (no Tailscale needed)");
   console.log("  --attach <session>  Attach to an existing tmux session (or SUPERINTENT_REMOTE_ATTACH)");
   console.log("  --no-auth           Disable password authentication");
+  console.log("  --yolo              Launch Claude with --dangerously-skip-permissions (or SUPERINTENT_REMOTE_YOLO)");
   console.log("  --no-qr             Disable QR code in startup banner");
   console.log("  -v, --version       Show version number");
   console.log("  -h, --help          Show this help");
@@ -28,6 +29,7 @@ if (args.includes("--help") || args.includes("-h")) {
 const noAuth = args.includes("--no-auth");
 const noQr = args.includes("--no-qr");
 const local = args.includes("--local");
+const yolo = args.includes("--yolo") || process.env.SUPERINTENT_REMOTE_YOLO === "true";
 
 if (local && noAuth) {
   console.error("ERROR: --local --no-auth is not allowed.");
@@ -88,4 +90,4 @@ if (local) {
   ip = tailscaleIp;
 }
 
-await startServices({ ip, port, noAuth, attachSession, noQr, local });
+await startServices({ ip, port, noAuth, attachSession, noQr, local, yolo });
