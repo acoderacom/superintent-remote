@@ -90,9 +90,9 @@ async function shutdown(): Promise<void> {
   if (shutdownRequested) return;
   shutdownRequested = true;
 
-  console.log("\nShutting down...");
+  console.log("\n\x1b[90mShutting down...\x1b[0m");
 
-  console.log("Stopping SSH server (waiting for active connections)...");
+  console.log("\x1b[90mStopping SSH server (waiting for active connections)...\x1b[0m");
   if (sshServer) {
     // close() stops accepting new connections; existing connections drain
     await new Promise<void>((resolve) => {
@@ -109,16 +109,16 @@ async function shutdown(): Promise<void> {
   }
 
   if (keepSession) {
-    console.log("Detaching from tmux session (session kept alive)...");
+    console.log("\x1b[90mDetaching from tmux session (session kept alive)...\x1b[0m");
   } else {
-    console.log("Killing tmux session...");
+    console.log("\x1b[90mKilling tmux session...\x1b[0m");
   }
   killTerminal({ keepSession });
 
-  console.log("Cleaning up PID file...");
+  console.log("\x1b[90mCleaning up PID file...\x1b[0m");
   await removePid(`wrapper-${currentPort}`);
 
-  console.log("Done.");
+  console.log("\x1b[90mSee ya!\x1b[0m");
   process.exit(0);
 }
 
@@ -182,31 +182,35 @@ export async function startServices(opts: StartOptions): Promise<void> {
   await writePid(`wrapper-${currentPort}`, process.pid);
 
   console.log("");
+  console.log(`Superintent Remote \x1b[90mv${pkg.version}\x1b[0m`);
+  console.log("");
   if (opts.local) {
     console.log("\x1b[41;1;37m WARNING \x1b[0m Binding to local network. Anyone on this WiFi can attempt to connect.");
-    console.log("");
-  }
-  console.log(`Superintent Remote v${pkg.version} (SSH)`);
-  console.log(`Mode:      ${isYoloMode ? "\x1b[31mYOLO\x1b[0m" : "Normal"}`);
-  console.log(`Project:   ${process.cwd()}`);
-  console.log(`Tmux:      ${currentSessionName}`);
-  console.log(`Connect:   ssh user@${opts.ip} -p ${opts.port}`);
-  if (password) {
-    console.log(`Password:  ${password}`);
   } else {
-    console.log("Auth:      disabled (--no-auth)");
+    console.log("\x1b[43;1;37m INFO \x1b[0m Binding to Tailscale. Only devices on your tailnet can connect.");
+  }
+  console.log("");
+  console.log(`Mode       ${isYoloMode ? "\x1b[31mYOLO\x1b[0m" : "Normal"}`);
+  console.log(`Project    ${process.cwd()}`);
+  console.log(`Tmux       ${currentSessionName}`);
+  console.log(`Connect    ssh user@${opts.ip} -p ${opts.port}`);
+  if (password) {
+    console.log(`Password   ${password}`);
+  } else {
+    console.log("Auth       disabled (--no-auth)");
   }
   if (!opts.noQr) {
     const sshUri = `ssh://user@${opts.ip}:${opts.port}`;
     const qr = await qrToTerminal(sshUri);
     console.log("");
-    console.log("Scan to connect:");
+    console.log("Scan to connect");
     for (const line of qr.trimEnd().split("\n")) {
       console.log(`  ${line}`);
     }
   }
   console.log("");
-  console.log("Press Ctrl+C to stop.");
+  console.log("\x1b[90mPress Ctrl+C to stop.\x1b[0m");
+  console.log("");
 
   // Signal handlers
   process.on("SIGTERM", shutdown);
