@@ -105,7 +105,7 @@ async function shutdown(): Promise<void> {
 
   let keepSession = isAttachMode;
   if (!isAttachMode) {
-    keepSession = !(await promptUser("Kill tmux session? [y/N] "));
+    keepSession = !(await promptUser("Kill tmux session? [Y/N] "));
   }
 
   if (keepSession) {
@@ -156,7 +156,7 @@ export async function startServices(opts: StartOptions): Promise<void> {
       attachTerminal(currentSessionName);
     } else {
       console.error(`Session "${opts.attachSession}" not found.`);
-      const create = await promptUser("Create a new session instead? [y/N] ");
+      const create = await promptUser("Create a new session instead? [Y/N] ");
       if (!create) {
         console.error("Aborted.");
         process.exit(0);
@@ -181,31 +181,32 @@ export async function startServices(opts: StartOptions): Promise<void> {
 
   await writePid(`wrapper-${currentPort}`, process.pid);
 
-  console.error("");
+  console.log("");
   if (opts.local) {
-    console.error("WARNING: Binding to local network. Anyone on this WiFi can attempt to connect.");
-    console.error("");
+    console.log("\x1b[41;1;37m WARNING \x1b[0m Binding to local network. Anyone on this WiFi can attempt to connect.");
+    console.log("");
   }
-  console.error(`=== Superintent Remote v${pkg.version} (SSH)${isYoloMode ? " [YOLO]" : ""} ===`);
-  console.error(`Project:   ${process.cwd()}`);
-  console.error(`Tmux:      ${currentSessionName}`);
-  console.error(`Connect:   ssh user@${opts.ip} -p ${opts.port}`);
+  console.log(`Superintent Remote v${pkg.version} (SSH)`);
+  console.log(`Mode:      ${isYoloMode ? "\x1b[31mYOLO\x1b[0m" : "Normal"}`);
+  console.log(`Project:   ${process.cwd()}`);
+  console.log(`Tmux:      ${currentSessionName}`);
+  console.log(`Connect:   ssh user@${opts.ip} -p ${opts.port}`);
   if (password) {
-    console.error(`Password:  ${password}`);
+    console.log(`Password:  ${password}`);
   } else {
-    console.error("Auth:      disabled (--no-auth)");
+    console.log("Auth:      disabled (--no-auth)");
   }
   if (!opts.noQr) {
     const sshUri = `ssh://user@${opts.ip}:${opts.port}`;
     const qr = await qrToTerminal(sshUri);
-    console.error("");
-    console.error("Scan to connect:");
+    console.log("");
+    console.log("Scan to connect:");
     for (const line of qr.trimEnd().split("\n")) {
-      console.error(`  ${line}`);
+      console.log(`  ${line}`);
     }
   }
-  console.error("");
-  console.error("Press Ctrl+C to stop.");
+  console.log("");
+  console.log("Press Ctrl+C to stop.");
 
   // Signal handlers
   process.on("SIGTERM", shutdown);
