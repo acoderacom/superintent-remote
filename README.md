@@ -93,14 +93,20 @@ bun start
 On startup you'll see:
 
 ```
-=== Superintent Remote v0.0.1 (SSH) ===
-Project:   /path/to/your/project
-Tmux:      project-a1b2c3
-Connect:   ssh user@100.x.x.x -p 2222
-Password:  e4f7a1b2c3d4e5f6
+Superintent Remote v0.0.1
 
-Scan to connect:
+INFO  Binding to Tailscale. Only devices on your tailnet can connect.
+
+Mode       Normal
+Project    /path/to/your/project
+Tmux       project-a1b2c3
+Connect    ssh user@100.x.x.x -p 2222
+Password   e4f7a1b2c3d4e5f6
+
+Scan to connect
 [QR code]
+
+Press Ctrl+C to stop.
 ```
 
 A QR code is rendered in the terminal for easy mobile scanning (e.g. tap in Termius to auto-fill the SSH connection). Use `--no-qr` to suppress it.
