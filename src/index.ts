@@ -39,7 +39,7 @@ if (local && noAuth) {
 }
 const portFlag = args.indexOf("--port");
 const envPort = process.env.SUPERINTENT_REMOTE_PORT ? parseInt(process.env.SUPERINTENT_REMOTE_PORT, 10) : undefined;
-const rawPort = portFlag !== -1 && args[portFlag + 1] ? parseInt(args[portFlag + 1], 10) : envPort ?? SSH_PORT;
+const rawPort = portFlag !== -1 && args[portFlag + 1] ? parseInt(args[portFlag + 1], 10) : (envPort ?? SSH_PORT);
 
 const attachFlag = args.indexOf("--attach");
 const envAttach = process.env.SUPERINTENT_REMOTE_ATTACH || undefined;
