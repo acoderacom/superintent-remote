@@ -1,6 +1,6 @@
 {
   "name": "superintent-remote",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Remote control for Claude Code CLI from your phone",
   "type": "module",
   "bin": {
